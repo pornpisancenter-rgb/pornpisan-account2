@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>พรพิศาลค้าส่ง | ระบบบัญชี</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- Header -->
+<header class="bg-blue-700 text-white p-4 shadow">
+  <h1 class="text-xl font-bold">📊 ระบบบัญชี ร้านพรพิศาลค้าส่ง</h1>
+</header>
+
+<div class="flex">
+  <!-- Sidebar -->
+  <aside class="w-56 bg-white shadow min-h-screen hidden md:block">
+    <nav class="p-4 space-y-2 text-sm">
+      <button onclick="showPage('dashboard')" class="nav-btn">🏠 ภาพรวม</button>
+      <button onclick="showPage('sales')" class="nav-btn">💰 ยอดขาย</button>
+      <button onclick="showPage('warehouse')" class="nav-btn">🏬 โกดัง</button>
+      <button onclick="showPage('debt')" class="nav-btn">📄 ยอดค้างชำระ</button>
+      <button onclick="showPage('payment')" class="nav-btn">💸 เงินสด / โอน / เช็ค</button>
+    </nav>
+  </aside>
+
+  <!-- Content -->
+  <main class="flex-1 p-4">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page">
+      <h2 class="text-lg font-semibold mb-3">ภาพรวมวันนี้</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card">รายรับรวม<br><b id="totalIncome">0</b></div>
+        <div class="card">รายจ่ายรวม<br><b id="totalExpense">0</b></div>
+        <div class="card">คงเหลือ<br><b id="balance">0</b></div>
+      </div>
+    </section>
+
+    <!-- SALES -->
+    <section id="sales" class="page hidden">
+      <h2 class="text-lg font-semibold mb-3">ยอดขาย</h2>
+      <input id="salesAmount" type="number" placeholder="ยอดขาย" class="input" />
+      <button onclick="addIncome()" class="btn">บันทึกยอดขาย</button>
+    </section>
+
+    <!-- WAREHOUSE -->
+    <section id="warehouse" class="page hidden">
+      <h2 class="text-lg font-semibold mb-3">โกดังพรพิศาล</h2>
+      <p class="text-sm text-gray-600">(หน้านี้สามารถเพิ่มสต๊อกสินค้าได้ภายหลัง)</p>
+    </section>
+
+    <!-- DEBT -->
+    <section id="debt" class="page hidden">
+      <h2 class="text-lg font-semibold mb-3">ยอดค้างชำระ</h2>
+      <input id="debtAmount" type="number" placeholder="ยอดค้าง" class="input" />
+      <button onclick="addDebt()" class="btn">บันทึกยอดค้าง</button>
+    </section>
+
+    <!-- PAYMENT -->
+    <section id="payment" class="page hidden">
+      <h2 class="text-lg font-semibold mb-3">เงินสด / โอน / เช็ค</h2>
+      <select id="payType" class="input">
+        <option value="cash">เงินสด</option>
+        <option value="transfer">เงินโอน</option>
+        <option value="check">เช็ค</option>
+      </select>
+      <input id="payAmount" type="number" placeholder="จำนวนเงิน" class="input" />
+      <input id="checkDate" type="date" class="input" />
+      <button onclick="addExpense()" class="btn">บันทึกการจ่าย</button>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  let db = JSON.parse(localStorage.getItem('pornpisanDB') || '{"income":0,"expense":0,"debt":0}');
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  function addIncome() {
+    db.income += Number(salesAmount.value || 0);
+    save();
+  }
+
+  function addExpense() {
+    db.expense += Number(payAmount.value || 0);
+    save();
+  }
+
+  function addDebt() {
+    db.debt += Number(debtAmount.value || 0);
+    save();
+  }
+
+  function save() {
+    localStorage.setItem('pornpisanDB', JSON.stringify(db));
+    render();
+  }
+
+  function render() {
+    totalIncome.innerText = db.income.toLocaleString();
+    totalExpense.innerText = db.expense.toLocaleString();
+    balance.innerText = (db.income - db.expense).toLocaleString();
+  }
+
+  render();
+</script>
+
+<style>
+  .nav-btn { width:100%; text-align:left; padding:8px; border-radius:8px; }
+  .nav-btn:hover { background:#e0f2fe; }
+  .card { background:white; padding:16px; border-radius:16px; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+  .input { width:100%; margin-bottom:8px; padding:8px; border-radius:8px; border:1px solid #ccc; }
+  .btn { background:#2563eb; color:white; padding:8px 16px; border-radius:12px; }
+</style>
+
+</body>
+</html>
